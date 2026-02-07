@@ -113,8 +113,14 @@ def analyze_trend_real(topic):
         fatigue_input = reddit_data['fatigue_score'] if reddit_data else 30
         
         # ML PREDICTION
+        # ML PREDICTION
         from ml_model import trend_model
-        risk_score, decline_risk = trend_model.predict_risk(slope, sentiment_input, fatigue_input)
+        prediction = trend_model.predict_risk(slope, sentiment_input, fatigue_input)
+        
+        risk_score = prediction["risk_score"]
+        decline_risk = prediction["risk_label"]
+        decline_prob = prediction["decline_probability"]
+        time_to_decline = prediction["predicted_time_to_decline"]
         
         summary = ""
         signals = []
@@ -122,27 +128,35 @@ def analyze_trend_real(topic):
 
         # Generate Explanations based on the ML Result
         if slope < -5:
-            risk_score = min(98, 70 + abs(slope))
-            decline_risk = "High"
-            summary = f"CRITICAL: Interest in '{topic}' has plummeted by {abs(slope)} points."
+            # Override risk score if slope is catastrophic, but keep ML insight
+            risk_score = max(risk_score, min(98, 70 + abs(slope)))
+            decline_risk = "High" 
+            summary = f"CRITICAL: Interest in '{topic}' has plummeted. Probability of collapse: {int(decline_prob*100)}%."
             signals.append({"metric": "Engagement Velocity", "status": "Critical", "explanation": f"Sharp drop ({slope} pts)."})
             actions = ["Exit immediately", "Do not invest", "Archive content"]
         elif slope < -2:
-            risk_score = 40 + abs(slope) * 2
-            decline_risk = "Medium"
-            summary = f"WARNING: '{topic}' is showing signs of fatigue."
+             # ... existing logic ...
+            summary = f"WARNING: '{topic}' is showing signs of fatigue. Estimated decline in {time_to_decline}."
             signals.append({"metric": "Engagement Velocity", "status": "Warning", "explanation": f"Moderate decline ({slope} pts)."})
             actions = ["Monitor closely", "Prepare pivot", "Reduce spend"]
         else:
-            summary = f"OPPORTUNITY: ML predicts continued growth (Risk: {risk_score}%)."
+            summary = f"OPPORTUNITY: Growth detected. Stability forecast: {time_to_decline}."
             signals.append({"metric": "Engagement Velocity", "status": "Good", "explanation": f"Growth detected (+{slope} pts)."})
             actions = ["Maximize reach", "Invest now", "Create content"]
 
         # Add Data Signals
-        if slope < 0:
-             pass # Handled above
+        if reddit_data:
+             if reddit_data['avg_sentiment'] < -0.1:
+                 signals.append({"metric": "Public Sentiment", "status": "Bad", "explanation": "Discussions are largely negative."})
+             elif reddit_data['avg_sentiment'] > 0.2:
+                 signals.append({"metric": "Public Sentiment", "status": "Good", "explanation": "Community sentiment is upbeat."})
+             else:
+                 signals.append({"metric": "Public Sentiment", "status": "Warning", "explanation": "Mixed/Neutral reactions."})
+
+             if reddit_data['fatigue_score'] > 60:
+                  signals.append({"metric": "Audience Fatigue", "status": "Bad", "explanation": f"High repost rate ({reddit_data['fatigue_score']}% repetition)."})
         else:
-             pass 
+             signals.append({"metric": "Public Sentiment", "status": "Warning", "explanation": "No social data available."})
 
         # Normalize sentiment for UI driver chart (100 = Bad, 0 = Good)
         sentiment_driver_val = (1 - sentiment_input) * 50
@@ -159,6 +173,8 @@ def analyze_trend_real(topic):
             "insight": {
                 "riskScore": int(risk_score),
                 "declineRisk": decline_risk,
+                "decline_probability": decline_prob,
+                "predicted_time_to_decline": time_to_decline,
                 "summary": summary,
                 "signals": signals,
                 "decline_drivers": decline_drivers,

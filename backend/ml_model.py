@@ -65,24 +65,38 @@ class TrendRiskClassifier:
         probs = self.model.predict_proba([[slope, sentiment, fatigue]])[0]
         
         # Risk Score Calculation:
-        # Weighted sum of probabilities: 
         # Low(0)*0 + Medium(1)*50 + High(2)*100
         # Actually better: P(Medium)*50 + P(High)*100
         
         # Check class order in sklearn (usually sorted)
         # 0: Low, 1: Medium, 2: High
+        # Get class probabilities
+        # 0: Low, 1: Medium, 2: High
         p_low = probs[0]
         p_med = probs[1] if len(probs) > 1 else 0
         p_high = probs[2] if len(probs) > 2 else 0
 
+        # Risk Score Calculation
         risk_score = (p_med * 50) + (p_high * 95)
         
+        # Determine Label
         if risk_score > 75:
-            return int(risk_score), "High"
+            label = "High"
+            # High risk = fast decline
+            time_estimate = "< 24 Hours" if p_high > 0.8 else "24-48 Hours"
         elif risk_score > 35:
-            return int(risk_score), "Medium"
+            label = "Medium"
+            time_estimate = "3-7 Days"
         else:
-            return int(risk_score), "Low"
+            label = "Low"
+            time_estimate = "Stable (> 30 Days)"
+
+        return {
+            "risk_score": int(risk_score),
+            "risk_label": label,
+            "decline_probability": round(float(p_high + (p_med * 0.5)), 2), # Composite prob of "not good"
+            "predicted_time_to_decline": time_estimate
+        }
 
 # Singleton instance
 trend_model = TrendRiskClassifier()

@@ -29,9 +29,12 @@ class Signal(BaseModel):
 class Insight(BaseModel):
     riskScore: int
     declineRisk: str
+    decline_probability: float
+    predicted_time_to_decline: str
     summary: str
     signals: List[Signal]
     actions: List[str]
+    decline_drivers: Optional[List[dict]] = None
 
 class TrendData(BaseModel):
     timestamp: str
@@ -87,6 +90,8 @@ async def analyze_trend(request: TrendRequest):
             "insight": {
                 "riskScore": risk_score,
                 "declineRisk": "High",
+                "decline_probability": 0.85,
+                "predicted_time_to_decline": "< 24 Hours",
                 "summary": f"Decline risk is HIGH. Engagement velocity has plummeted by -{velocity_drop}% (Simulated).",
                 "signals": [
                     {"metric": "Engagement Velocity", "status": "Critical", "explanation": f"Dropped by {velocity_drop}% in 24h."},
@@ -109,6 +114,8 @@ async def analyze_trend(request: TrendRequest):
             "insight": {
                 "riskScore": risk_score,
                 "declineRisk": "Medium",
+                "decline_probability": 0.45,
+                "predicted_time_to_decline": "3-7 Days",
                 "summary": f"Decline risk is MEDIUM. Engagement is flat (0% growth).",
                 "signals": [
                     {"metric": "Engagement Velocity", "status": "Warning", "explanation": "Stagnant (0-2% growth)."},
@@ -131,6 +138,8 @@ async def analyze_trend(request: TrendRequest):
              "insight": {
                 "riskScore": risk_score,
                 "declineRisk": "Low",
+                "decline_probability": 0.10,
+                "predicted_time_to_decline": "Stable (> 30 Days)",
                 "summary": f"Decline risk is LOW. '{request.topic}' is showing healthy organic growth (Simulated).",
                 "signals": [
                     {"metric": "Engagement Drop", "status": "Normal", "explanation": "Growth is steady."},
