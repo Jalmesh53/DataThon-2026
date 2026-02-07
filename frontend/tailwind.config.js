@@ -19,6 +19,15 @@ export default {
             fontFamily: {
                 sans: ["Inter", "sans-serif"],
             },
+            animation: {
+                "pulse-slow": "pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+            },
+            keyframes: {
+                "pulse-slow": {
+                    "0%, 100%": { opacity: 1, filter: "brightness(1) blur(0px)" },
+                    "50%": { opacity: 0.8, filter: "brightness(1.2) blur(1px)" },
+                },
+            },
         },
     },
     plugins: [],
