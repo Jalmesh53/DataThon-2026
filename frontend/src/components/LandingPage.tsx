@@ -29,19 +29,23 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
                 transition={{ duration: 1, ease: "easeOut" }}
                 className="max-w-4xl"
             >
-                <h1 className="text-7xl md:text-9xl font-black tracking-tighter mb-8 leading-[0.9]">
-                    <span className="bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/40">
-                        KNOW WHEN <br />
+                <div className="mb-6 flex justify-center">
+                    <span className="px-3 py-1 rounded-full border border-neon-blue/30 bg-neon-blue/10 text-neon-blue text-[10px] font-mono uppercase tracking-widest">
+                        For Enterprise Marketing & Strategy Teams
                     </span>
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-blue via-neon-purple to-neon-red animate-pulse-slow filter drop-shadow-[0_0_30px_rgba(0,243,255,0.3)]">
-                        IT ENDS.
+                </div>
+                <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[1.1] uppercase">
+                    <span className="bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/40">
+                        Know When to <br />
+                    </span>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-red via-purple-500 to-neon-blue animate-pulse-slow filter drop-shadow-[0_0_30px_rgba(0,243,255,0.3)]">
+                        Stop Investing.
                     </span>
                 </h1>
 
                 <p className="text-xl md:text-2xl text-white/60 font-light leading-relaxed mb-12 max-w-2xl mx-auto backdrop-blur-sm px-4">
-                    Feather.ai is the world's most advanced decision intelligence dashboard
-                    built to predict the <span className="text-neon-red font-semibold">collapse</span> of
-                    hyper-velocity social trends.
+                    An AI-powered early warning system for marketing and investment teams
+                    to <span className="text-white font-medium">avoid wasted spend</span> on declining social trends.
                 </p>
             </motion.div>
 
@@ -76,20 +80,20 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
             >
                 <div className="glass-panel p-8 rounded-3xl text-left hover:border-neon-blue/40 transition-colors">
                     <Shield className="w-10 h-10 text-neon-blue mb-4" />
-                    <h3 className="text-lg font-bold mb-2">Decision Guard</h3>
-                    <p className="text-white/40 text-sm leading-relaxed">Protect your capital by identifying "dead trends" before they drain your marketing budget.</p>
+                    <h3 className="text-lg font-bold mb-2">Capital Protection</h3>
+                    <p className="text-white/40 text-sm leading-relaxed">Prevent budget wastage by identifying market saturation signals before competitors.</p>
                 </div>
 
                 <div className="glass-panel p-8 rounded-3xl text-left hover:border-neon-purple/40 transition-colors">
                     <TrendingDown className="w-10 h-10 text-neon-purple mb-4" />
-                    <h3 className="text-lg font-bold mb-2">Collapse Scoring</h3>
-                    <p className="text-white/40 text-sm leading-relaxed">Proprietary logic detects audience fatigue and content saturation levels in real-time.</p>
+                    <h3 className="text-lg font-bold mb-2">Risk Scoring</h3>
+                    <p className="text-white/40 text-sm leading-relaxed">Institutional-grade algorithms quantify decline probability and audience fatigue.</p>
                 </div>
 
                 <div className="glass-panel p-8 rounded-3xl text-left hover:border-neon-red/40 transition-colors">
                     <BarChart3 className="w-10 h-10 text-neon-red mb-4" />
-                    <h3 className="text-lg font-bold mb-2">Simulated Futures</h3>
-                    <p className="text-white/40 text-sm leading-relaxed">Enter "God Mode" to simulate market shifts and see how they impact trend lifespan.</p>
+                    <h3 className="text-lg font-bold mb-2">Scenario Modeling</h3>
+                    <p className="text-white/40 text-sm leading-relaxed">Simulate market variables to forecast trend longevity and exit timing windows.</p>
                 </div>
             </motion.div>
 

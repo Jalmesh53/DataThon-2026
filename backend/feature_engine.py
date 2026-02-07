@@ -63,6 +63,11 @@ class FeatureEngine:
         # format_repetition_score (placeholder logic for demo)
         features["format_repetition_score"] = min(0.9, (features["trend_age"] / 30))
         
+        # Override for ultra-massive content (Legends don't saturate, they stabilize)
+        if views > 50000000:
+             features["format_repetition_score"] *= 0.1 # Very low saturation for legends
+             features["engagement_decay_rate"] *= 0.1   # Very low decay for legends
+        
         # time_since_peak (placeholder: assume peak was midway for older trends)
         features["time_since_peak"] = (features["trend_age"] * 12) if features["trend_age"] > 3 else 0
 

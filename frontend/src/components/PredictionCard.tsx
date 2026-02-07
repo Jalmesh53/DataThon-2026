@@ -17,20 +17,20 @@ export const PredictionCard = ({ probability, timeToDecline }: PredictionCardPro
             <div className="flex items-start justify-between mb-6">
                 <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/60 flex items-center gap-2">
                     <Compass className={`w-4 h-4 ${probability > 0.7 ? "text-neon-red shadow-[0_0_10px_rgba(255,0,60,0.5)]" : "text-neon-blue"}`} />
-                    Decline Risk Engine
+                    Decline Risk Score
                 </h3>
                 <div className="px-2 py-1 bg-white/5 rounded text-[10px] text-gray-500 border border-white/10 font-mono">
-                    PROT_V4.2
+                    RISK_MODEL_V5
                 </div>
             </div>
 
             <div className="space-y-6">
                 {/* 1. Decline Risk Status */}
                 <div className="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/5">
-                    <span className="text-xs text-white/40 uppercase font-bold tracking-widest">Decline Risk:</span>
+                    <span className="text-xs text-white/40 uppercase font-bold tracking-widest">Capital Risk:</span>
                     <span className={`text-lg font-black uppercase tracking-tighter ${probability > 0.7 ? "text-neon-red" : probability > 0.4 ? "text-yellow-400" : "text-neon-green"
                         }`}>
-                        {probability > 0.7 ? "HIGH" : probability > 0.4 ? "MODERATE" : "LOW"}
+                        {probability > 0.7 ? "CRITICAL" : probability > 0.4 ? "ELEVATED" : "LOW"}
                     </span>
                 </div>
 

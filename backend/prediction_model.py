@@ -34,7 +34,7 @@ class DeclineModel:
         
         # Evergreen damping
         if views > 10000000 or likes > 500000:
-            risk_score = 25 # Start lower for legends
+            risk_score = 15 # Even lower for confirmed legends
         
         for feature, weight in self.weights.items():
             val = features.get(feature, 0)

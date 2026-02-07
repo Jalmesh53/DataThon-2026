@@ -24,22 +24,22 @@ export const AIInsightCard = ({ riskScore, signals = [], drivers = [], primaryDr
     // Decision logic based on risk score
     const getDecision = (score: number) => {
         if (score > 75) return {
-            action: "DIVEST & PIVOT",
-            reason: "Extreme fatigue and algorithmic suppression detected. Immediate liquidity exit recommended.",
+            action: "REDUCE EXPOSURE",
+            reason: "High probability of trend collapse. Immediate reallocation of marketing budget recommended.",
             color: "text-red-500",
             bg: "bg-red-500/10",
             border: "border-red-500/20"
         };
         if (score > 40) return {
-            action: "HALT & MONITOR",
-            reason: "Saturation reached critical mass. Suspend additional capital allocation until stabilization.",
+            action: "HOLD CAPITAL",
+            reason: "Market saturation signals detected. Pause incremental spend and monitor velocity.",
             color: "text-amber-500",
             bg: "bg-amber-500/10",
             border: "border-amber-500/20"
         };
         return {
-            action: "AGGRESSIVE SCALE",
-            reason: "Organic velocity exceeds fatigue growth. High efficiency for capital deployment.",
+            action: "ALLOCATE CAPITAL",
+            reason: "Strong growth efficacy. Trend allows for high ROI on new campaign spend.",
             color: "text-green-500",
             bg: "bg-green-500/10",
             border: "border-green-500/20"
@@ -61,15 +61,15 @@ export const AIInsightCard = ({ riskScore, signals = [], drivers = [], primaryDr
                         <BrainCircuit className="w-6 h-6 text-neon-blue" />
                     </div>
                     <div>
-                        <h3 className="text-xl font-bold text-white tracking-tight">Decision Justification Engine™</h3>
-                        <p className="text-[10px] font-mono text-white/40 uppercase tracking-widest">Model: XAI-Decision-Core v4.2</p>
+                        <h3 className="text-xl font-bold text-white tracking-tight">Strategic Decision Core</h3>
+                        <p className="text-[10px] font-mono text-white/40 uppercase tracking-widest">Model: Enterprise-Risk-v5.0</p>
                     </div>
                 </div>
                 <div className={`px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest border uppercase ${riskScore > 75 ? "bg-red-500/20 border-red-500/50 text-red-400" :
                     riskScore > 40 ? "bg-amber-500/20 border-amber-500/50 text-amber-400" :
                         "bg-green-500/20 border-green-500/50 text-green-400"
                     }`}>
-                    {riskScore > 75 ? "CRITICAL_RISK" : riskScore > 40 ? "MODERATE_WARNING" : "STABLE_GROWTH"}
+                    {riskScore > 75 ? "CRITICAL_RISK" : riskScore > 40 ? "ELEVATED_RISK" : "LOW_RISK"}
                 </div>
             </div>
 
@@ -78,7 +78,7 @@ export const AIInsightCard = ({ riskScore, signals = [], drivers = [], primaryDr
                 <section>
                     <div className="flex items-center gap-2 mb-4">
                         <Target className="w-4 h-4 text-neon-blue" />
-                        <h4 className="text-xs font-bold text-white/60 uppercase tracking-widest">Recommended Decision</h4>
+                        <h4 className="text-xs font-bold text-white/60 uppercase tracking-widest">Strategic Recommendation</h4>
                     </div>
                     <div className={`p-5 rounded-xl border ${decision.border} ${decision.bg}`}>
                         <div className={`text-2xl font-black mb-2 tracking-tighter ${decision.color}`}>
@@ -94,7 +94,7 @@ export const AIInsightCard = ({ riskScore, signals = [], drivers = [], primaryDr
                 <section>
                     <div className="flex items-center gap-2 mb-4">
                         <ShieldAlert className="w-4 h-4 text-neon-blue" />
-                        <h4 className="text-xs font-bold text-white/60 uppercase tracking-widest">Decision Defense (XAI Justification)</h4>
+                        <h4 className="text-xs font-bold text-white/60 uppercase tracking-widest">Risk Drivers & Signals</h4>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {signals.map((signal, i) => {

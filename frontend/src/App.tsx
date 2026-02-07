@@ -1,12 +1,12 @@
 import { useState, useCallback, Component, type ErrorInfo, type ReactNode } from "react";
-import Hyperspeed from "./components/Hyperspeed";
-import { hyperspeedPresets } from "./components/HyperSpeedPresets";
+
 import { TrendChart } from "./components/TrendChart";
 import { DeclineRadar } from "./components/DeclineRadar";
 import { LifecycleTimeline } from "./components/LifecycleTimeline";
 import { AIInsightCard } from "./components/AIInsightCard";
 import { Zap, Activity, AlertTriangle, Info, ArrowUpRight, Sparkles, CheckCircle, ShieldCheck, PieChart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import LightRays from "./components/LightRays";
 
 import { SimulationControl } from "./components/SimulationControl";
 import { WorldMap } from "./components/WorldMap";
@@ -18,13 +18,13 @@ import { LandingPage } from "./components/LandingPage";
 // Mock data to prevent crash if backend is offline
 const MOCK_RESULT = {
   insight: {
-    summary: "Feather.ai detected high volatility in this trend (Offline Mode).",
+    summary: "System detected high capital risk in this trend segment (Offline Mode).",
     riskScore: 85,
-    declineRisk: "High",
-    actions: ["Pivot immediately", "Reduce ad spend", "Monitor competitors"],
+    declineRisk: "Critical",
+    actions: ["Reduce Exposure", "Halt Ad Spend", "Competitor Conquesting"],
     signals: [
-      { metric: "Search Volume", status: "Critical", explanation: "Simulated drop of -45%." },
-      { metric: "Sentiment", status: "Warning", explanation: "Negative sentiment detected." }
+      { metric: "Search Volume", status: "Critical", explanation: "Projected drop of -45% in next cycle." },
+      { metric: "Sentiment", status: "Warning", explanation: "Negative sentiment velocity detected." }
     ],
     decline_drivers: [
       { label: "Saturation", value: 90, fullMark: 100 },
@@ -87,6 +87,7 @@ function App() {
   const [showSimulator, setShowSimulator] = useState(false);
   const [showBattleMode, setShowBattleMode] = useState(false);
   const [showInputError, setShowInputError] = useState(false);
+  const [userMode, setUserMode] = useState<"marketing" | "investor">("marketing");
 
   const detectPlatform = (val: string) => {
     if (val.includes("youtube.com") || val.includes("youtu.be")) return "YouTube";
@@ -113,19 +114,26 @@ function App() {
     setSimulatedResult(simData);
   }, []);
 
-  const handleAnalyze = async () => {
-    if (!topic.trim()) {
+  const handleAnalyze = async (overrideTopic?: string | any) => {
+    const targetTopic = typeof overrideTopic === "string" ? overrideTopic : topic;
+
+    if (!targetTopic.trim()) {
       setShowInputError(true);
       setTimeout(() => setShowInputError(false), 3000);
       return;
     }
+
+    if (typeof overrideTopic === "string") {
+      setTopic(targetTopic);
+    }
+
     setShowInputError(false);
     setAnalyzing(true);
     setShowSimulator(false);
     setSimulatedResult(null);
-    setLastAnalyzedTopic(topic);
+    setLastAnalyzedTopic(targetTopic);
 
-    let searchTopic = topic.trim();
+    let searchTopic = targetTopic.trim();
     // Keep full URL for YouTube/Social detection in backend
 
     try {
@@ -146,9 +154,27 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-neon-blue selection:text-black overflow-x-hidden">
+    <div className="min-h-screen bg-black text-white font-sans selection:bg-neon-blue selection:text-black overflow-x-hidden relative">
       <ErrorBoundary>
-        <Hyperspeed effectOptions={hyperspeedPresets.one as any} />
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <LightRays
+            raysOrigin="top-center"
+            raysColor="#ffffff"
+            raysSpeed={1}
+            lightSpread={0.5}
+            rayLength={3}
+            followMouse={true}
+            mouseInfluence={0.1}
+            noiseAmount={0}
+            distortion={0}
+            pulsating={false}
+            fadeDistance={1}
+            saturation={1}
+            className="w-full h-full"
+          />
+        </div>
+
+
       </ErrorBoundary>
 
       <AnimatePresence mode="wait">
@@ -208,14 +234,33 @@ function App() {
               </span>
             </motion.h1>
 
-            <div className="w-full max-w-2xl relative group z-50 mt-12">
+
+            <div className="w-full max-w-5xl relative group z-50 mt-12 flex flex-col gap-8">
+              {/* Enterprise Mode Toggle */}
+              <div className="flex justify-center mb-4 relative z-50">
+                <div className="bg-white/5 border border-white/10 rounded-full p-1 flex items-center pointer-events-auto">
+                  <button
+                    onClick={() => setUserMode("marketing")}
+                    className={`px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all cursor-pointer ${userMode === "marketing" ? "bg-neon-blue text-black shadow-[0_0_15px_rgba(0,243,255,0.4)]" : "text-white/40 hover:text-white"}`}
+                  >
+                    Marketing
+                  </button>
+                  <button
+                    onClick={() => setUserMode("investor")}
+                    className={`px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all cursor-pointer ${userMode === "investor" ? "bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.4)]" : "text-white/40 hover:text-white"}`}
+                  >
+                    Investor
+                  </button>
+                </div>
+              </div>
+
               <div className="flex justify-between items-end mb-2 px-1">
                 <motion.span
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   className="text-[10px] font-mono tracking-[0.3em] text-white/40 uppercase"
                 >
-                  {analysisType === "campaign" ? "Intelligence / Campaign_Forensics" : "Intelligence / Market_Trend"}
+                  {userMode === "investor" ? "Capital Allocation / Risk_Management" : (analysisType === "campaign" ? "Intelligence / Campaign_Forensics" : "Intelligence / Market_Trend")}
                 </motion.span>
                 {detectedPlatform && (
                   <motion.span
@@ -231,56 +276,237 @@ function App() {
               <div className="absolute inset-0 bg-gradient-to-r from-neon-blue/20 to-neon-purple/20 rounded-xl blur-xl opacity-50 group-hover:opacity-80 transition duration-500"></div>
 
               <div className="relative flex flex-col bg-black/60 backdrop-blur-2xl border border-white/10 rounded-xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-                <div className="flex border-b border-white/5 bg-white/5">
-                  <button
-                    onClick={() => { setAnalysisType("trend"); setDetectedPlatform(null); }}
-                    className={`flex-1 py-2 text-[10px] font-bold tracking-[0.2em] uppercase transition-all ${analysisType === "trend" ? "text-neon-blue bg-white/5" : "text-white/30 hover:text-white/50"}`}
-                  >
-                    Trend Analysis
-                  </button>
-                  <button
-                    onClick={() => { setAnalysisType("campaign"); }}
-                    className={`flex-1 py-2 text-[10px] font-bold tracking-[0.2em] uppercase transition-all ${analysisType === "campaign" ? "text-neon-purple bg-white/5" : "text-white/30 hover:text-white/50"}`}
-                  >
-                    Campaign Forensics
-                  </button>
-                </div>
+                {userMode === "marketing" ? (
+                  <>
+                    <div className="flex border-b border-white/5 bg-white/5">
+                      <button
+                        onClick={() => { setAnalysisType("trend"); setDetectedPlatform(null); }}
+                        className={`flex-1 py-4 text-[11px] font-bold tracking-[0.2em] uppercase transition-all ${analysisType === "trend" ? "text-neon-blue bg-white/5 border-b-2 border-neon-blue" : "text-white/30 hover:text-white/50"}`}
+                      >
+                        Trend Risk Analysis
+                      </button>
+                      <button
+                        onClick={() => { setAnalysisType("campaign"); }}
+                        className={`flex-1 py-4 text-[11px] font-bold tracking-[0.2em] uppercase transition-all ${analysisType === "campaign" ? "text-neon-purple bg-white/5 border-b-2 border-neon-purple" : "text-white/30 hover:text-white/50"}`}
+                      >
+                        Campaign Intelligence
+                      </button>
+                    </div>
 
-                <div className="flex items-center p-2">
-                  <div className="ml-3 p-2 bg-white/5 rounded-lg">
-                    {analysisType === "campaign" ? (
-                      <Activity className="w-5 h-5 text-neon-purple" />
+                    <div className="flex items-center p-4">
+                      <div className="ml-3 p-2 bg-white/5 rounded-lg">
+                        {analysisType === "campaign" ? (
+                          <Activity className="w-5 h-5 text-neon-purple" />
+                        ) : (
+                          <Zap className="w-5 h-5 text-neon-blue" />
+                        )}
+                      </div>
+                      <input
+                        type="text"
+                        placeholder={analysisType === "campaign" ? "Paste YouTube Video URL or Campaign Link..." : "Enter trend keyword (e.g. 'Skibidi Toilet')..."}
+                        className="w-full bg-transparent border-none outline-none text-white px-6 py-4 placeholder:text-white/20 text-lg font-light tracking-wide"
+                        value={topic}
+                        onChange={handleInputChange}
+                        onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
+                      />
+                      <button
+                        onClick={handleAnalyze}
+                        disabled={analyzing}
+                        className={`px-10 py-4 rounded-lg font-black uppercase tracking-[0.2em] text-xs hover:scale-105 active:scale-95 transition-all text-black shadow-lg ${analysisType === "campaign"
+                          ? "bg-gradient-to-r from-neon-purple to-purple-600 shadow-purple-500/20"
+                          : "bg-gradient-to-r from-neon-blue to-blue-600 shadow-neon-blue/20"
+                          }`}
+                      >
+                        {analyzing ? (
+                          <span className="flex items-center gap-2">
+                            <Activity className="w-3 h-3 animate-spin" />
+                            Scanning
+                          </span>
+                        ) : (
+                          "Analyze Risk"
+                        )}
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="p-8 text-center space-y-4">
+                    <div className="flex justify-center mb-2">
+                      <ShieldCheck className="w-12 h-12 text-white/20" />
+                    </div>
+                    <h2 className="text-2xl font-black uppercase tracking-tight text-white">
+                      Institutional Portfolio View
+                    </h2>
+                    <p className="text-white/40 text-sm max-w-lg mx-auto">
+                      Track overall portfolio exposure to high-volatility cultural assets.
+                      Detect systemic risks across multiple active campaigns.
+                    </p>
+
+                    <div className="flex justify-center gap-4 mt-6">
+                      <div className="text-center p-4 bg-white/5 rounded-lg border border-white/10">
+                        <div className="text-xs text-white/40 uppercase tracking-widest mb-1">Total Exposure</div>
+                        <div className="text-xl font-bold text-white">$4.2M</div>
+                      </div>
+                      <div className="text-center p-4 bg-white/5 rounded-lg border border-white/10">
+                        <div className="text-xs text-white/40 uppercase tracking-widest mb-1">Capital at Risk</div>
+                        <div className="text-xl font-bold text-neon-red">$850K</div>
+                      </div>
+                      <div className="text-center p-4 bg-white/5 rounded-lg border border-white/10">
+                        <div className="text-xs text-white/40 uppercase tracking-widest mb-1">Divestment Signals</div>
+                        <div className="text-xl font-bold text-amber-400">3 Active</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Active Trend Portfolio Section (New) */}
+              {!analyzing && !displayedResult && (
+                <div className="w-full mt-12 animate-fade-in-up">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 text-neon-blue" />
+                      {userMode === "investor" ? "Institutional Portfolio Monitor" : "Active Trend Portfolio"}
+                    </h3>
+                    <button className="text-[10px] font-mono text-neon-blue border border-neon-blue/30 px-3 py-1 rounded hover:bg-neon-blue/10">
+                      VIEW_FULL_REPORT
+                    </button>
+                  </div>
+
+                  <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden backdrop-blur-md">
+                    {userMode === "marketing" ? (
+                      <table className="w-full text-left text-sm">
+                        <thead>
+                          <tr className="border-b border-white/10 bg-black/40">
+                            <th className="px-6 py-4 font-mono text-[10px] uppercase text-white/40 tracking-widest">Trend Asset</th>
+                            <th className="px-6 py-4 font-mono text-[10px] uppercase text-white/40 tracking-widest">Decline Risk</th>
+                            <th className="px-6 py-4 font-mono text-[10px] uppercase text-white/40 tracking-widest">Time Window</th>
+                            <th className="px-6 py-4 font-mono text-[10px] uppercase text-white/40 tracking-widest">Collapse Driver</th>
+                            <th className="px-6 py-4 font-mono text-[10px] uppercase text-white/40 tracking-widest text-right">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          <tr className="hover:bg-white/5 transition-colors group">
+                            <td className="px-6 py-4 font-bold text-white">Gen Z "Silent Walking"</td>
+                            <td className="px-6 py-4">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-red-500/20 text-red-500 border border-red-500/30">
+                                Critical (88%)
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-white/60 font-mono text-xs">48 Hours</td>
+                            <td className="px-6 py-4 text-white/60 text-xs">Audience Fatigue</td>
+                            <td className="px-6 py-4 text-right">
+                              <span
+                                onClick={() => handleAnalyze('Gen Z "Silent Walking"')}
+                                className="text-xs font-bold text-red-400 group-hover:underline cursor-pointer"
+                              >
+                                DIVEST_NOW &rarr;
+                              </span>
+                            </td>
+                          </tr>
+                          <tr className="hover:bg-white/5 transition-colors group">
+                            <td className="px-6 py-4 font-bold text-white">"Coquette" Aesthetics</td>
+                            <td className="px-6 py-4">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-500 border border-amber-500/30">
+                                Elevated (62%)
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-white/60 font-mono text-xs">2 Weeks</td>
+                            <td className="px-6 py-4 text-white/60 text-xs">Saturation</td>
+                            <td className="px-6 py-4 text-right">
+                              <span
+                                onClick={() => handleAnalyze('"Coquette" Aesthetics')}
+                                className="text-xs font-bold text-amber-400 group-hover:underline cursor-pointer"
+                              >
+                                MONITOR &rarr;
+                              </span>
+                            </td>
+                          </tr>
+                          <tr className="hover:bg-white/5 transition-colors group">
+                            <td className="px-6 py-4 font-bold text-white">AI Clay Filters</td>
+                            <td className="px-6 py-4">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-green-500/20 text-green-500 border border-green-500/30">
+                                Low (15%)
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-white/60 font-mono text-xs">&gt; 3 Months</td>
+                            <td className="px-6 py-4 text-white/60 text-xs">None</td>
+                            <td className="px-6 py-4 text-right">
+                              <span
+                                onClick={() => handleAnalyze('AI Clay Filters')}
+                                className="text-xs font-bold text-green-400 group-hover:underline cursor-pointer"
+                              >
+                                SCALE_SPEND &rarr;
+                              </span>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
                     ) : (
-                      <Zap className="w-5 h-5 text-neon-blue" />
+                      <table className="w-full text-left text-sm">
+                        <thead>
+                          <tr className="border-b border-white/10 bg-black/40">
+                            <th className="px-6 py-4 font-mono text-[10px] uppercase text-white/40 tracking-widest">Asset Class</th>
+                            <th className="px-6 py-4 font-mono text-[10px] uppercase text-white/40 tracking-widest">Ticker / Sector</th>
+                            <th className="px-6 py-4 font-mono text-[10px] uppercase text-white/40 tracking-widest">Exposure</th>
+                            <th className="px-6 py-4 font-mono text-[10px] uppercase text-white/40 tracking-widest">Volatility (VaR)</th>
+                            <th className="px-6 py-4 font-mono text-[10px] uppercase text-white/40 tracking-widest text-right">Recommendation</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          <tr className="hover:bg-white/5 transition-colors group">
+                            <td className="px-6 py-4 font-bold text-white">Social Media Equities</td>
+                            <td className="px-6 py-4 text-white/60 font-mono text-xs">$META, $SNAP</td>
+                            <td className="px-6 py-4 text-white font-mono">$1.2M</td>
+                            <td className="px-6 py-4">
+                              <span className="text-red-500 font-bold">High (Beta: 1.8)</span>
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                              <span
+                                onClick={() => handleAnalyze('Social Media Equities')}
+                                className="text-xs font-bold text-red-400 group-hover:underline cursor-pointer"
+                              >
+                                HEDGE_POSITION &rarr;
+                              </span>
+                            </td>
+                          </tr>
+                          <tr className="hover:bg-white/5 transition-colors group">
+                            <td className="px-6 py-4 font-bold text-white">Direct-to-Consumer (DTC)</td>
+                            <td className="px-6 py-4 text-white/60 font-mono text-xs">Retail / Apparel</td>
+                            <td className="px-6 py-4 text-white font-mono">$500K</td>
+                            <td className="px-6 py-4">
+                              <span className="text-amber-500 font-bold">Medium</span>
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                              <span
+                                onClick={() => handleAnalyze('DTC Retail')}
+                                className="text-xs font-bold text-amber-400 group-hover:underline cursor-pointer"
+                              >
+                                HOLD &rarr;
+                              </span>
+                            </td>
+                          </tr>
+                          <tr className="hover:bg-white/5 transition-colors group">
+                            <td className="px-6 py-4 font-bold text-white">Creator Economy Fund</td>
+                            <td className="px-6 py-4 text-white/60 font-mono text-xs">Venture / Series B</td>
+                            <td className="px-6 py-4 text-white font-mono">$2.5M</td>
+                            <td className="px-6 py-4">
+                              <span className="text-green-500 font-bold">Low</span>
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                              <span
+                                onClick={() => handleAnalyze('Creator Economy Fund')}
+                                className="text-xs font-bold text-green-400 group-hover:underline cursor-pointer"
+                              >
+                                ACCUMULATE &rarr;
+                              </span>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
                     )}
                   </div>
-                  <input
-                    type="text"
-                    placeholder={analysisType === "campaign" ? "Paste YouTube Video URL or Campaign Link..." : "Enter trend keyword (e.g. 'Skibidi Toilet')..."}
-                    className="w-full bg-transparent border-none outline-none text-white px-4 py-4 placeholder:text-white/20 text-lg font-light tracking-wide"
-                    value={topic}
-                    onChange={handleInputChange}
-                    onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
-                  />
-                  <button
-                    onClick={handleAnalyze}
-                    disabled={analyzing}
-                    className={`px-8 py-4 rounded-lg font-black uppercase tracking-[0.2em] text-xs hover:scale-105 active:scale-95 transition-all text-black shadow-lg ${analysisType === "campaign"
-                      ? "bg-gradient-to-r from-neon-purple to-purple-600 shadow-purple-500/20"
-                      : "bg-gradient-to-r from-neon-blue to-blue-600 shadow-neon-blue/20"
-                      }`}
-                  >
-                    {analyzing ? (
-                      <span className="flex items-center gap-2">
-                        <Activity className="w-3 h-3 animate-spin" />
-                        Scanning
-                      </span>
-                    ) : (
-                      "Analyze"
-                    )}
-                  </button>
                 </div>
-              </div>
+              )}
 
               <AnimatePresence>
                 {showInputError && (
@@ -402,7 +628,7 @@ function App() {
                             <div className="bg-black/40 backdrop-blur-md border border-white/5 p-6 rounded-2xl">
                               <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
                                 <Activity className="w-3 h-3 text-cyan-400" />
-                                Trend Velocity {showSimulator && "(Simulated)"}
+                                Engagement Velocity Analysis {showSimulator && "(Simulated)"}
                               </h3>
                               <div className="h-[200px]">
                                 <TrendChart
@@ -417,7 +643,7 @@ function App() {
                               <div>
                                 <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
                                   <PieChart className="w-3 h-3 text-purple-400" />
-                                  Fatigue Radar
+                                  Saturation & Fatigue Metrics
                                 </h3>
                                 <div className="h-[300px] flex items-center justify-center">
                                   <DeclineRadar data={displayedResult.insight.decline_drivers || []} />
@@ -427,7 +653,7 @@ function App() {
                           </div>
 
                           <div className="bg-black/40 backdrop-blur-md border border-white/5 p-8 rounded-2xl">
-                            <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em] mb-6">Global Resilience Mapping</h3>
+                            <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em] mb-6">Global Market Resilience</h3>
                             <WorldMap riskScore={displayedResult.insight.riskScore} />
                           </div>
                         </div>
