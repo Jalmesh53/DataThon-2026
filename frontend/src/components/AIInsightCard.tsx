@@ -17,9 +17,10 @@ interface AIInsightCardProps {
     riskScore: number;
     signals: Signal[];
     drivers: Driver[];
+    primaryDriver?: string;
 }
 
-export const AIInsightCard = ({ riskScore, signals = [], drivers = [] }: AIInsightCardProps) => {
+export const AIInsightCard = ({ riskScore, signals = [], drivers = [], primaryDriver }: AIInsightCardProps) => {
     // Decision logic based on risk score
     const getDecision = (score: number) => {
         if (score > 75) return {
@@ -65,8 +66,8 @@ export const AIInsightCard = ({ riskScore, signals = [], drivers = [] }: AIInsig
                     </div>
                 </div>
                 <div className={`px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest border uppercase ${riskScore > 75 ? "bg-red-500/20 border-red-500/50 text-red-400" :
-                        riskScore > 40 ? "bg-amber-500/20 border-amber-500/50 text-amber-400" :
-                            "bg-green-500/20 border-green-500/50 text-green-400"
+                    riskScore > 40 ? "bg-amber-500/20 border-amber-500/50 text-amber-400" :
+                        "bg-green-500/20 border-green-500/50 text-green-400"
                     }`}>
                     {riskScore > 75 ? "CRITICAL_RISK" : riskScore > 40 ? "MODERATE_WARNING" : "STABLE_GROWTH"}
                 </div>
@@ -96,20 +97,29 @@ export const AIInsightCard = ({ riskScore, signals = [], drivers = [] }: AIInsig
                         <h4 className="text-xs font-bold text-white/60 uppercase tracking-widest">Decision Defense (XAI Justification)</h4>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {signals.map((signal, i) => (
-                            <div key={i} className="p-4 bg-white/5 border border-white/10 rounded-xl">
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-[10px] font-mono text-white/40 uppercase tracking-wider">{signal.metric}</span>
-                                    <span className={`text-[8px] font-black px-1.5 py-0.5 rounded ${signal.status === "Critical" ? "bg-red-500/20 text-red-400" : "bg-neon-blue/20 text-neon-blue"
-                                        }`}>
-                                        {signal.status.toUpperCase()}
-                                    </span>
+                        {signals.map((signal, i) => {
+                            const isPrimary = (primaryDriver && signal.metric === primaryDriver);
+                            return (
+                                <div key={i} className={`p-4 transition-all relative overflow-hidden rounded-xl border ${isPrimary ? "bg-red-500/10 border-red-500/40 ring-1 ring-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.1)]" : "bg-white/5 border-white/10"
+                                    }`}>
+                                    {isPrimary && (
+                                        <div className="absolute top-0 right-0 bg-red-500 text-white text-[7px] font-black px-1.5 py-0.5 uppercase tracking-tighter">
+                                            PRIMARY_DRIVER
+                                        </div>
+                                    )}
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-[10px] font-mono text-white/40 uppercase tracking-wider">{signal.metric}</span>
+                                        <span className={`text-[8px] font-black px-1.5 py-0.5 rounded ${isPrimary || signal.status === "Critical" ? "bg-red-500/20 text-red-400" : "bg-neon-blue/20 text-neon-blue"
+                                            }`}>
+                                            {signal.status.toUpperCase()}
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-white/70 leading-relaxed font-light">
+                                        {signal.explanation}
+                                    </p>
                                 </div>
-                                <p className="text-xs text-white/70 leading-relaxed font-light">
-                                    {signal.explanation}
-                                </p>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </section>
 

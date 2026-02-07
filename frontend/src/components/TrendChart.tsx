@@ -1,11 +1,22 @@
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-export function TrendChart({ data, color = "#00f3ff" }) {
+interface TrendChartProps {
+    data: any;
+    color?: string;
+    subtitle?: string;
+}
+
+export function TrendChart({ data, color = "#00f3ff", subtitle }: TrendChartProps) {
     return (
         <div className="glass-panel rounded-2xl p-4 relative h-[300px] w-full">
-            <h3 className="text-white/60 text-sm font-semibold tracking-wider mb-4 uppercase pl-2">
+            <h3 className="text-white/60 text-sm font-semibold tracking-wider mb-1 uppercase pl-2">
                 Engagement Velocity (24h)
             </h3>
+            {subtitle && (
+                <p className="text-neon-blue/40 text-[9px] font-mono italic uppercase tracking-widest pl-2 mb-4">
+                    {subtitle}
+                </p>
+            )}
             <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={data}>
                     <defs>

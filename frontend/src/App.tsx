@@ -126,14 +126,7 @@ function App() {
     setLastAnalyzedTopic(topic);
 
     let searchTopic = topic.trim();
-    if (detectedPlatform) {
-      try {
-        const url = new URL(searchTopic);
-        searchTopic = url.pathname.split("/").pop() || "Campaign Analysis";
-      } catch {
-        searchTopic = "Campaign Analysis";
-      }
-    }
+    // Keep full URL for YouTube/Social detection in backend
 
     try {
       const response = await fetch("http://localhost:8000/analyze", {
@@ -273,8 +266,8 @@ function App() {
                     onClick={handleAnalyze}
                     disabled={analyzing}
                     className={`px-8 py-4 rounded-lg font-black uppercase tracking-[0.2em] text-xs hover:scale-105 active:scale-95 transition-all text-black shadow-lg ${analysisType === "campaign"
-                        ? "bg-gradient-to-r from-neon-purple to-purple-600 shadow-purple-500/20"
-                        : "bg-gradient-to-r from-neon-blue to-blue-600 shadow-neon-blue/20"
+                      ? "bg-gradient-to-r from-neon-purple to-purple-600 shadow-purple-500/20"
+                      : "bg-gradient-to-r from-neon-blue to-blue-600 shadow-neon-blue/20"
                       }`}
                   >
                     {analyzing ? (
@@ -378,11 +371,18 @@ function App() {
                             "border-neon-blue bg-neon-blue/5"
                           }`}
                       >
-                        <div className="flex items-center gap-2 mb-3">
-                          <ShieldCheck className={`w-4 h-4 ${displayedResult.insight.riskScore > 75 ? "text-neon-red" : "text-neon-blue"}`} />
-                          <h3 className="text-white/40 font-mono text-[10px] tracking-[0.4em] uppercase">
-                            Executive Summary / {showSimulator ? "Simulated Outlook" : "Market Intelligence"}
-                          </h3>
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <ShieldCheck className={`w-4 h-4 ${displayedResult.insight.riskScore > 75 ? "text-neon-red" : "text-neon-blue"}`} />
+                            <h3 className="text-white/40 font-mono text-[10px] tracking-[0.4em] uppercase">
+                              Forensic Analysis / {displayedResult.detectedTrend || (showSimulator ? "Simulated" : "Market Intel")}
+                            </h3>
+                          </div>
+                          {displayedResult.confidence && (
+                            <div className="text-[10px] font-mono text-neon-blue/60 bg-neon-blue/5 px-2 py-0.5 rounded border border-neon-blue/20">
+                              CONFIDENCE: {(displayedResult.confidence * 100).toFixed(1)}%
+                            </div>
+                          )}
                         </div>
                         <p className="text-2xl md:text-4xl font-light text-white leading-tight max-w-4xl">
                           {displayedResult.insight.summary}
@@ -395,6 +395,7 @@ function App() {
                             riskScore={displayedResult.insight.riskScore}
                             signals={displayedResult.insight.signals || []}
                             drivers={displayedResult.insight.decline_drivers || []}
+                            primaryDriver={displayedResult.primaryDriver}
                           />
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -404,7 +405,11 @@ function App() {
                                 Trend Velocity {showSimulator && "(Simulated)"}
                               </h3>
                               <div className="h-[200px]">
-                                <TrendChart data={displayedResult.trend.history || displayedResult.trend} color={displayedResult.insight.riskScore > 75 ? "#ff003c" : "#00f3ff"} />
+                                <TrendChart
+                                  data={displayedResult.trend.history || displayedResult.trend}
+                                  color={displayedResult.insight.riskScore > 75 ? "#ff003c" : "#00f3ff"}
+                                  subtitle="Estimated trend trajectory"
+                                />
                               </div>
                             </div>
 
@@ -414,7 +419,7 @@ function App() {
                                   <PieChart className="w-3 h-3 text-purple-400" />
                                   Fatigue Radar
                                 </h3>
-                                <div className="h-[200px] flex items-center justify-center">
+                                <div className="h-[300px] flex items-center justify-center">
                                   <DeclineRadar data={displayedResult.insight.decline_drivers || []} />
                                 </div>
                               </div>

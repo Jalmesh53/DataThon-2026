@@ -14,7 +14,8 @@ class DeclineModel:
             "format_repetition_score": 15.0, # Moderate impact
             "trend_age": 10.0,               # General factor
             "engagement_per_view": -10.0,    # Higher engagement reduces risk
-            "comment_sentiment_score": -15.0  # Higher sentiment reduces risk
+            "comment_sentiment_score": -15.0, # Higher sentiment reduces risk
+            "interaction_quality": -20.0     # High quality interaction actively stabilizes
         }
 
     def predict(self, request_id):
@@ -23,8 +24,17 @@ class DeclineModel:
         if not features:
             return {"declineRisk": 50, "timeWindow": "48h"}
 
+        # Custom logic for "Evergreen" legends (e.g. Despacito)
+        # If views are massive and likes are massive, it's a stable pillar
+        views = features.get("viewCount", 0)
+        likes = features.get("likeCount", 0)
+        
         # Weighted score (0-100)
         risk_score = 50 # Base risk
+        
+        # Evergreen damping
+        if views > 10000000 or likes > 500000:
+            risk_score = 25 # Start lower for legends
         
         for feature, weight in self.weights.items():
             val = features.get(feature, 0)

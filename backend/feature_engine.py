@@ -19,6 +19,9 @@ class FeatureEngine:
         comment_count = metadata.get("commentCount", 0)
         published_at = metadata.get("publishedAt", "")
         
+        features["viewCount"] = views
+        features["likeCount"] = likes
+        
         # 2. engagement_per_view
         features["engagement_per_view"] = (likes + comment_count) / views if views > 0 else 0
         
@@ -36,6 +39,9 @@ class FeatureEngine:
             # sentiment
             df["sentiment"] = df["text"].apply(lambda x: TextBlob(str(x)).sentiment.polarity)
             features["comment_sentiment_score"] = df["sentiment"].mean()
+            
+            # Interaction Quality: Sentiment * Interaction density
+            features["interaction_quality"] = (features["comment_sentiment_score"] + 1) / 2 * (1 + features["engagement_per_view"])
             
             # fatigue_keyword_ratio
             fatigue_count = 0

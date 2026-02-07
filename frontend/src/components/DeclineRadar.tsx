@@ -10,9 +10,9 @@ interface RadarProps {
 
 export function DeclineRadar({ data }: RadarProps) {
     // Config
-    const radius = 110; // Slightly smaller to ensure fit
+    const radius = 90;  // Reduced to give more space for labels
     const cx = 175;     // Centered in 350
-    const cy = 150;     // Centered in 300
+    const cy = 170;     // Shifted down to avoid title overlap
 
     // Stats
     const total = data.length;

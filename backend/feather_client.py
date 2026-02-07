@@ -50,3 +50,6 @@ feather.register_feature("fatigue_keyword_ratio", "Ratio of comments containing 
 feather.register_feature("format_repetition_score", "Estimated reuse of content format/tropes")
 feather.register_feature("trend_age", "Days since the trend/video was published")
 feather.register_feature("time_since_peak", "Estimated time in hours since peak engagement")
+feather.register_feature("viewCount", "Raw view count from source")
+feather.register_feature("likeCount", "Raw like count from source")
+feather.register_feature("interaction_quality", "Aggregated metric for sentiment and interaction depth")

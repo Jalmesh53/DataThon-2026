@@ -49,11 +49,18 @@ class GenExplanationModule:
             "format_repetition_score": "Content format has reached saturation. Viewers are seeking novelty elsewhere.",
             "trend_age": "Trend lifecycle is reaching late maturity. Diminishing returns expected.",
             "engagement_per_view": "Low interaction density suggests interest is passive rather than active.",
-            "comment_sentiment_score": "Rising critical sentiment in the community is eroding brand trust."
+            "comment_sentiment_score": "Rising critical sentiment in the community is eroding brand trust.",
+            "stable_engagement": "This format shows ongoing engagement and nostalgic value in comments. There are no strong decline signals.",
+            "interaction_quality": "High interaction quality and positive community feedback are sustaining trend longevity."
         }
 
     def generate(self, primary_driver, risk_score):
         base = self.explanations.get(primary_driver, "Trend is showing signs of natural saturation.")
+        
+        # If the driver is one of the stable ones, return it as is or with positive prefix
+        if primary_driver in ["stable_engagement", "interaction_quality"] or risk_score < 35:
+            return base
+            
         if risk_score > 75:
             prefix = "Critical Alert: "
         elif risk_score > 40:
@@ -72,7 +79,9 @@ class RecommendationEngine:
             "format_repetition_score": "Pivot to a sub-trend or hybrid format to reset audience interest.",
             "trend_age": "Prepare exit strategy. Divert budget to emerging trends.",
             "engagement_per_view": "Improve engagement loops with interactive or community-focused content.",
-            "comment_sentiment_score": "Address critical feedback directly or pause promotional spend."
+            "comment_sentiment_score": "Address critical feedback directly or pause promotional spend.",
+            "stable_engagement": "No urgent action required; trend is stable.",
+            "interaction_quality": "Maintain current content quality and nurture community assets."
         }
 
     def get_action(self, primary_driver):
