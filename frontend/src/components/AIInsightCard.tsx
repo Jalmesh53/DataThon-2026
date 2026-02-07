@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { AlertTriangle, CheckCircle, Info, TrendingDown, TrendingUp, BrainCircuit } from "lucide-react";
+import { BrainCircuit, ShieldAlert, Target, FileText } from "lucide-react";
 
 interface Signal {
     metric: string;
@@ -15,103 +15,134 @@ interface Driver {
 
 interface AIInsightCardProps {
     riskScore: number;
-    summary: string;
     signals: Signal[];
     drivers: Driver[];
 }
 
-export const AIInsightCard = ({ riskScore, summary, signals = [], drivers = [] }: AIInsightCardProps) => {
+export const AIInsightCard = ({ riskScore, signals = [], drivers = [] }: AIInsightCardProps) => {
+    // Decision logic based on risk score
+    const getDecision = (score: number) => {
+        if (score > 75) return {
+            action: "DIVEST & PIVOT",
+            reason: "Extreme fatigue and algorithmic suppression detected. Immediate liquidity exit recommended.",
+            color: "text-red-500",
+            bg: "bg-red-500/10",
+            border: "border-red-500/20"
+        };
+        if (score > 40) return {
+            action: "HALT & MONITOR",
+            reason: "Saturation reached critical mass. Suspend additional capital allocation until stabilization.",
+            color: "text-amber-500",
+            bg: "bg-amber-500/10",
+            border: "border-amber-500/20"
+        };
+        return {
+            action: "AGGRESSIVE SCALE",
+            reason: "Organic velocity exceeds fatigue growth. High efficiency for capital deployment.",
+            color: "text-green-500",
+            bg: "bg-green-500/10",
+            border: "border-green-500/20"
+        };
+    };
 
-    // Identify the top contributing factor to the risk
-    // Safety check: ensure drivers is an array and has items
-    const safeDrivers = Array.isArray(drivers) ? drivers : [];
-    const topFactor = safeDrivers.length > 0
-        ? [...safeDrivers].sort((a, b) => b.value - a.value)[0]
-        : null;
+    const decision = getDecision(riskScore);
 
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-black/40 backdrop-blur-md border border-white/10 p-6 rounded-xl relative overflow-hidden"
+            className="w-full bg-black/40 backdrop-blur-2xl border border-white/5 rounded-2xl overflow-hidden shadow-2xl"
         >
-            {/* Decorative background glow */}
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-500/20 blur-3xl rounded-full" />
-
-            <div className="flex items-start justify-between mb-4 relative z-10">
-                <div className="flex items-center gap-3">
-                    <div className="p-2 bg-purple-500/20 rounded-lg">
-                        <BrainCircuit className="w-6 h-6 text-purple-400" />
+            {/* Header: AI Decision Core */}
+            <div className="flex items-center justify-between p-6 border-b border-white/5">
+                <div className="flex items-center gap-4">
+                    <div className="p-3 bg-neon-blue/10 rounded-xl border border-neon-blue/20">
+                        <BrainCircuit className="w-6 h-6 text-neon-blue" />
                     </div>
                     <div>
-                        <h3 className="text-xl font-bold text-white">Reviewer AI Insight</h3>
-                        <p className="text-xs text-gray-400">Explainable Analysis Model v1.0</p>
+                        <h3 className="text-xl font-bold text-white tracking-tight">Decision Justification Engine™</h3>
+                        <p className="text-[10px] font-mono text-white/40 uppercase tracking-widest">Model: XAI-Decision-Core v4.2</p>
                     </div>
                 </div>
-                <div className={`px-3 py-1 rounded-full text-xs font-bold border ${riskScore > 75 ? "bg-red-500/20 border-red-500 text-red-400" :
-                    riskScore > 40 ? "bg-yellow-500/20 border-yellow-500 text-yellow-400" :
-                        "bg-green-500/20 border-green-500 text-green-400"
+                <div className={`px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest border uppercase ${riskScore > 75 ? "bg-red-500/20 border-red-500/50 text-red-400" :
+                        riskScore > 40 ? "bg-amber-500/20 border-amber-500/50 text-amber-400" :
+                            "bg-green-500/20 border-green-500/50 text-green-400"
                     }`}>
-                    {riskScore > 75 ? "CRITICAL RISK" : riskScore > 40 ? "MODERATE RISK" : "HEALTHY"}
+                    {riskScore > 75 ? "CRITICAL_RISK" : riskScore > 40 ? "MODERATE_WARNING" : "STABLE_GROWTH"}
                 </div>
             </div>
 
-            <p className="text-gray-300 mb-6 text-sm leading-relaxed border-l-2 border-purple-500 pl-3">
-                {summary}
-            </p>
-
-            {/* Primary Signals Analysis */}
-            <div className="space-y-3 mb-6">
-                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Key Signals Detected</h4>
-                {signals.length > 0 ? (
-                    signals.map((signal, index) => (
-                        <div key={index} className="flex items-center justify-between bg-white/5 p-3 rounded-lg border border-white/5 hover:border-white/10 transition-colors">
-                            <div className="flex items-center gap-3">
-                                {signal.status === "Critical" || signal.status === "Bad" ? (
-                                    <AlertTriangle className="w-4 h-4 text-red-400" />
-                                ) : signal.status === "Warning" ? (
-                                    <Info className="w-4 h-4 text-yellow-400" />
-                                ) : (
-                                    <CheckCircle className="w-4 h-4 text-green-400" />
-                                )}
-                                <span className="text-sm font-medium text-gray-200">{signal.metric}</span>
-                            </div>
-                            <span className="text-xs text-gray-400">{signal.explanation}</span>
-                        </div>
-                    ))
-                ) : (
-                    <div className="text-xs text-gray-500 italic p-2 text-center">No specific signal anomalies detected.</div>
-                )}
-            </div>
-
-            {/* Top Factor Highlight */}
-            {topFactor && (
-                <div className="bg-gradient-to-r from-purple-900/40 to-blue-900/40 p-4 rounded-lg border border-white/10">
-                    <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs text-blue-200 font-semibold">PRIMARY DRIVER</span>
-                        <span className="text-xs text-blue-300">{topFactor.value}% Impact</span>
+            <div className="p-6 space-y-8">
+                {/* 1. What is the decision? */}
+                <section>
+                    <div className="flex items-center gap-2 mb-4">
+                        <Target className="w-4 h-4 text-neon-blue" />
+                        <h4 className="text-xs font-bold text-white/60 uppercase tracking-widest">Recommended Decision</h4>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className={`p-5 rounded-xl border ${decision.border} ${decision.bg}`}>
+                        <div className={`text-2xl font-black mb-2 tracking-tighter ${decision.color}`}>
+                            {decision.action}
+                        </div>
+                        <p className="text-white/80 text-sm leading-relaxed font-light italic">
+                            "{decision.reason}"
+                        </p>
+                    </div>
+                </section>
+
+                {/* 2. Why? (Justification for Leadership) */}
+                <section>
+                    <div className="flex items-center gap-2 mb-4">
+                        <ShieldAlert className="w-4 h-4 text-neon-blue" />
+                        <h4 className="text-xs font-bold text-white/60 uppercase tracking-widest">Decision Defense (XAI Justification)</h4>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {signals.map((signal, i) => (
+                            <div key={i} className="p-4 bg-white/5 border border-white/10 rounded-xl">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-[10px] font-mono text-white/40 uppercase tracking-wider">{signal.metric}</span>
+                                    <span className={`text-[8px] font-black px-1.5 py-0.5 rounded ${signal.status === "Critical" ? "bg-red-500/20 text-red-400" : "bg-neon-blue/20 text-neon-blue"
+                                        }`}>
+                                        {signal.status.toUpperCase()}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-white/70 leading-relaxed font-light">
+                                    {signal.explanation}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* 3. Core Risk Driver (Business Impact) */}
+                <section className="pt-4 border-t border-white/5">
+                    <div className="flex items-center gap-2 mb-4">
+                        <FileText className="w-4 h-4 text-neon-blue" />
+                        <h4 className="text-xs font-bold text-white/60 uppercase tracking-widest">Core Risk Driver Analysis</h4>
+                    </div>
+                    <div className="flex items-center gap-6">
                         <div className="flex-1">
-                            <div className="text-lg font-bold text-white mb-1">{topFactor.label}</div>
-                            <div className="w-full bg-black/50 h-1.5 rounded-full overflow-hidden">
+                            <div className="flex justify-between items-center mb-2">
+                                <span className="text-sm font-bold text-white uppercase tracking-tighter">
+                                    {drivers.length > 0 ? drivers.sort((a, b) => b.value - a.value)[0].label : "Saturation Index"}
+                                </span>
+                                <span className="text-lg font-black text-neon-blue">
+                                    {drivers.length > 0 ? drivers.sort((a, b) => b.value - a.value)[0].value : riskScore}%
+                                </span>
+                            </div>
+                            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                                 <motion.div
                                     initial={{ width: 0 }}
-                                    animate={{ width: `${topFactor.value}%` }}
-                                    transition={{ duration: 1, delay: 0.5 }}
-                                    className="h-full bg-blue-500 rounded-full"
+                                    animate={{ width: `${drivers.length > 0 ? drivers.sort((a, b) => b.value - a.value)[0].value : riskScore}%` }}
+                                    className="h-full bg-gradient-to-r from-neon-blue to-neon-purple shadow-[0_0_10px_rgba(0,243,255,0.5)]"
                                 />
                             </div>
                         </div>
-                        {topFactor.label === "Saturation" ? <TrendingDown className="text-red-400" /> : <Info className="text-blue-400" />}
+                        <div className="w-1/3 text-[10px] text-white/40 font-mono italic leading-tight">
+                            "Primary driver for the {riskScore > 50 ? "predicted decline" : "growth outlook"}."
+                        </div>
                     </div>
-                    <p className="text-[10px] text-gray-400 mt-2">
-                        This factor contributes most significantly to the calculated decline probability.
-                        {topFactor.value > 80 ? " Corrective action is strictly required." : " Monitoring is advised."}
-                    </p>
-                </div>
-            )}
-
+                </section>
+            </div>
         </motion.div>
     );
 };

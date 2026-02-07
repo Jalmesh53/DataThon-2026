@@ -58,8 +58,9 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
                     color="#00f3ff"
                     speed="4s"
                     className="hover:scale-105 transition-transform active:scale-95"
+                    innerClassName="!bg-gradient-to-r !from-neon-blue !to-blue-600 !text-black !border-none !font-black !px-12 !py-6"
                 >
-                    <span className="flex items-center gap-3 font-black text-xl uppercase tracking-widest">
+                    <span className="flex items-center gap-3 text-xl uppercase tracking-widest">
                         Let's Get Started
                         <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                     </span>

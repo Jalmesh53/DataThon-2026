@@ -4,6 +4,7 @@ import './StarBorder.css';
 interface StarBorderProps extends React.HTMLAttributes<HTMLElement> {
     as?: React.ElementType;
     className?: string;
+    innerClassName?: string;
     color?: string;
     speed?: string;
     thickness?: number;
@@ -13,14 +14,17 @@ interface StarBorderProps extends React.HTMLAttributes<HTMLElement> {
 const StarBorder: React.FC<StarBorderProps> = ({
     as: Component = 'button',
     className = '',
+    innerClassName = '',
     color = 'white',
     speed = '6s',
     thickness = 1,
     children,
     ...rest
 }) => {
+    const Comp = Component as any;
+
     return (
-        <Component
+        <Comp
             className={`star-border-container ${className}`}
             style={{
                 padding: `${thickness}px 0`,
@@ -42,8 +46,8 @@ const StarBorder: React.FC<StarBorderProps> = ({
                     animationDuration: speed
                 }}
             ></div>
-            <div className="inner-content">{children}</div>
-        </Component>
+            <div className={`inner-content ${innerClassName}`}>{children}</div>
+        </Comp>
     );
 };
 
