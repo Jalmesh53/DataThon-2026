@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 // import { StarField } from "./components/StarField";
 import Hyperspeed from "./components/Hyperspeed";
 import { hyperspeedPresets } from "./components/HyperSpeedPresets";
@@ -93,9 +93,35 @@ function App() {
     }, 1500);
   };
 
+  /* Rotating Placeholder Logic */
+  const PLACEHOLDERS = [
+    "#ChatGPT",
+    "GRWM",
+    "Met Gala",
+    "#Viral",
+    "Creator Trend"
+  ];
+
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [isInputFocused, setIsInputFocused] = useState(false);
+
+  useEffect(() => {
+    // Only rotate if input is NOT focused and input is empty
+    if (isInputFocused || topic.length > 0) return;
+
+    const interval = setInterval(() => {
+      setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDERS.length);
+    }, 3000); // Rotate every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [isInputFocused, topic]);
+
+  const currentPlaceholder = PLACEHOLDERS[placeholderIndex];
+
   return (
-    // Added a simple gradient background instead of 3D for now
+    // ... existing wrapper ...
     <div className="relative min-h-screen text-white overflow-x-hidden selection:bg-neon-purple/30 font-sans bg-black">
+      {/* ... existing ClickSpark ... */}
       <ClickSpark
         sparkColor="#fff"
         sparkSize={10}
@@ -104,19 +130,15 @@ function App() {
         duration={400}
         className="w-full min-h-screen"
       >
-        {/* 3D Background - Hyperspeed Restored */}
+        {/* ... existing ErrorBoundary & Hyperspeed ... */}
         <ErrorBoundary>
           <Hyperspeed effectOptions={hyperspeedPresets.one} />
         </ErrorBoundary>
 
-
-        {/* Hero Crystal - DISABLED */}
-        {/* <div className="fixed inset-0 pointer-events-none"> <HeroCrystal /> </div> */}
-
-        {/* Content Container */}
+        {/* ... content ... */}
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 flex flex-col items-center min-h-screen">
 
-          {/* Header Badge */}
+          {/* ... Header Badge & Title ... */}
           <div className="mb-8 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md shadow-[0_0_30px_rgba(0,243,255,0.15)] flex items-center justify-center gap-2">
             <Activity className="w-5 h-5 text-neon-blue" />
             <span className="text-xs font-mono tracking-[0.4em] text-neon-blue uppercase drop-shadow-[0_0_10px_rgba(0,243,255,0.6)]">
@@ -124,7 +146,6 @@ function App() {
             </span>
           </div>
 
-          {/* Main Title */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -139,28 +160,76 @@ function App() {
             </span>
           </motion.h1>
 
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.5 }}
+            className="text-lg md:text-xl text-white/40 font-light tracking-wide max-w-lg text-center mx-auto"
+          >
+            AI-powered insights into when social media trends start to fade
+          </motion.p>
+
           {/* Search Input */}
-          <div className="w-full max-w-2xl relative group z-50 mt-12">
-            <div className="absolute inset-0 bg-gradient-to-r from-neon-blue to-neon-purple rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
-            <div className="relative flex items-center bg-black/80 backdrop-blur-md border border-white/10 rounded-xl p-2">
-              <Zap className="w-6 h-6 text-neon-blue ml-3 opacity-70" />
-              <input
-                type="text"
-                placeholder="Enter trend (e.g. 'Skibidi Toilet')"
-                className="w-full bg-transparent border-none outline-none text-white px-4 py-3 placeholder:text-white/30 text-lg font-medium"
-                value={topic}
-                onChange={(e) => setTopic(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
-              />
-              <button
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="w-full max-w-2xl relative group z-50 mt-12"
+          >
+            {/* Pulsing Glow Background */}
+            <motion.div
+              animate={{ opacity: [0.3, 0.6, 0.3] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute inset-0 bg-gradient-to-r from-neon-blue via-purple-500 to-neon-purple rounded-2xl blur-xl group-hover:opacity-75 group-focus-within:opacity-100 group-focus-within:blur-2xl transition-all duration-500"
+            />
+
+            {/* Input Container */}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="relative flex items-center bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-2xl group-focus-within:border-neon-blue/50 group-focus-within:shadow-[0_0_30px_rgba(0,243,255,0.3)] transition-all duration-300"
+            >
+              <Zap className="w-8 h-8 text-neon-blue ml-4 opacity-70 group-focus-within:opacity-100 group-focus-within:text-white transition-all duration-300" />
+
+              {/* Relative wrapper for Input + Animated Placeholder */}
+              <div className="relative w-full ml-4">
+                <AnimatePresence mode="wait">
+                  {!isInputFocused && !topic && (
+                    <motion.span
+                      key={currentPlaceholder}
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 0.3, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      transition={{ duration: 0.3 }}
+                      className="absolute inset-0 flex items-center text-xl font-medium tracking-wide text-white pointer-events-none select-none truncate"
+                    >
+                      Enter a trend like {currentPlaceholder}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+
+                <input
+                  type="text"
+                  // Remove default placeholder so custom one shows
+                  placeholder=""
+                  className="w-full bg-transparent border-none outline-none text-white py-4 text-xl font-medium tracking-wide relative z-10"
+                  value={topic}
+                  onFocus={() => setIsInputFocused(true)}
+                  onBlur={() => setIsInputFocused(false)}
+                  onChange={(e) => setTopic(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
+                />
+              </div>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={handleAnalyze}
                 disabled={analyzing}
-                className="bg-neon-blue/10 hover:bg-neon-blue/20 text-neon-blue px-8 py-3 rounded-lg font-semibold transition-all border border-neon-blue/30 uppercase tracking-wider text-sm"
+                className="bg-neon-blue/20 hover:bg-neon-blue text-neon-blue hover:text-black px-10 py-4 rounded-xl font-bold transition-all border border-neon-blue/50 hover:border-neon-blue uppercase tracking-wider text-sm shadow-[0_0_15px_rgba(0,243,255,0.2)]"
               >
                 {analyzing ? "Scanning..." : "Analyze"}
-              </button>
-            </div>
-          </div>
+              </motion.button>
+            </motion.div>
+          </motion.div>
 
           {/* Loading State */}
           {analyzing && (
