@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { Zap, TrendingDown, Shield, BarChart3, ArrowRight } from "lucide-react";
 import StarBorder from "./StarBorder";
 
+import ShinyText from "./ShinyText";
+
 interface LandingPageProps {
     onStart: () => void;
 }
@@ -38,9 +40,14 @@ export const LandingPage = ({ onStart }: LandingPageProps) => {
                     <span className="bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/40">
                         Know When to <br />
                     </span>
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-red via-purple-500 to-neon-blue animate-pulse-slow filter drop-shadow-[0_0_30px_rgba(0,243,255,0.3)]">
-                        Stop Investing.
-                    </span>
+                    <ShinyText
+                        text="Stop Investing."
+                        disabled={false}
+                        speed={3}
+                        className="filter drop-shadow-[0_0_30px_rgba(188,19,254,0.5)]"
+                        color="#b026ff"
+                        shineColor="#ffffff"
+                    />
                 </h1>
 
                 <p className="text-xl md:text-2xl text-white/60 font-light leading-relaxed mb-12 max-w-2xl mx-auto backdrop-blur-sm px-4">

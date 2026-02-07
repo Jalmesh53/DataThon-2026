@@ -8,6 +8,8 @@ import { Zap, Activity, AlertTriangle, Info, ArrowUpRight, Sparkles, CheckCircle
 import { motion, AnimatePresence } from "framer-motion";
 import LightRays from "./components/LightRays";
 
+import ShinyText from "./components/ShinyText";
+
 import { SimulationControl } from "./components/SimulationControl";
 import { WorldMap } from "./components/WorldMap";
 import { ComparisonView } from "./components/ComparisonView";
@@ -229,9 +231,14 @@ function App() {
                 PREDICT THE
               </span>
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-red via-purple-500 to-neon-blue animate-pulse filter drop-shadow-[0_0_20px_rgba(188,19,254,0.5)]">
-                COLLAPSE
-              </span>
+              <ShinyText
+                text="COLLAPSE"
+                disabled={false}
+                speed={3}
+                className="filter drop-shadow-[0_0_20px_rgba(188,19,254,0.5)]"
+                color="#b026ff"
+                shineColor="#ffffff"
+              />
             </motion.h1>
 
 
