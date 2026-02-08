@@ -11,3 +11,4 @@ requests
 shap
 google-generativeai
 matplotlib
+gunicorn

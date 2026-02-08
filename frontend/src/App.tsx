@@ -142,7 +142,8 @@ function App() {
     // Keep full URL for YouTube/Social detection in backend
 
     try {
-      const response = await fetch("http://localhost:8000/analyze", {
+      const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
+      const response = await fetch(`${API_BASE}/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ topic: searchTopic, timeWindow: "48h" })
