@@ -11,7 +11,7 @@
 ---
 
 ## 🚀 Live Demo
-**Frontend:** https://datathon-2026-yz54.vercel.app/
+**Frontend:** https://trendfall-ai-yz54.vercel.app/
 **Backend API:** https://trendfall-backend.onrender.com
 
 ---
