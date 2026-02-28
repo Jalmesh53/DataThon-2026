@@ -75,7 +75,7 @@ Compare two competing trends side-by-side to determine which asset deserves the 
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/prit-esh-20/Datathon-2026.git
+git clone https://github.com/Jalmesh53/Datathon-2026.git
 cd Datathon-2026
 ```
 
